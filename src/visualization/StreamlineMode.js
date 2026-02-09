@@ -16,7 +16,7 @@ class StreamlineMode extends VisualizationMode {
         const dimension = this.vectorField.dimension;
 
         // Generate seed points for streamlines
-        const seedPoints = this.generateSeedPoints(bounds, this.numStreamlines * this.config.density);
+        const seedPoints = this.generateSeedPoints(bounds, Math.ceil(this.numStreamlines * this.config.density));
 
         const color = new THREE.Color(this.config.color);
 
@@ -24,29 +24,19 @@ class StreamlineMode extends VisualizationMode {
         for (const seed of seedPoints) {
             const path = this.vectorField.integrateRK4(seed, 50, 0.2);
 
-            // Draw line along path
+            if (path.length < 2) continue;
+
+            // Draw line along path using createLine helper
             for (let i = 0; i < path.length - 1; i++) {
                 const start = path[i];
                 const end = path[i + 1];
 
-                const lineGeometry = new THREE.BufferGeometry();
-                const positions = new Float32Array([
-                    start.x, start.y, start.z || 0,
-                    end.x, end.y, end.z || 0
-                ]);
-
-                lineGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-                const lineMaterial = new THREE.LineBasicMaterial({
+                this.createLine(
+                    { x: start.x, y: start.y, z: start.z || 0 },
+                    { x: end.x, y: end.y, z: end.z || 0 },
                     color,
-                    opacity: this.config.opacity,
-                    transparent: this.config.opacity < 1,
-                    linewidth: 2 * this.config.scale
-                });
-
-                const line = new THREE.Line(lineGeometry, lineMaterial);
-                this.meshes.push(line);
-                this.sceneManager.addMesh(line);
+                    this.config.opacity
+                );
             }
         }
     }
