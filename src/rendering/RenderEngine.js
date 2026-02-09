@@ -31,6 +31,7 @@ class RenderEngine {
 
         this.isRunning = true;
         this.lastTime = performance.now();
+        console.log('Render loop starting...');
         this.animate();
     }
 

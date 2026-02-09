@@ -17,42 +17,72 @@ class VectorFieldVisualization {
      * Initialize the application
      */
     init() {
-        const canvasContainer = document.getElementById('canvas-container');
-        if (!canvasContainer) {
-            console.error('Canvas container not found');
-            return;
+        try {
+            console.log('Starting initialization...');
+
+            const canvasContainer = document.getElementById('canvas-container');
+            if (!canvasContainer) {
+                console.error('Canvas container not found');
+                return;
+            }
+            console.log('Canvas container found');
+
+            // Initialize core components
+            console.log('Creating SceneManager...');
+            this.sceneManager = new SceneManager(canvasContainer);
+            console.log('SceneManager created');
+
+            console.log('Creating CameraController...');
+            this.cameraController = new CameraController(
+                this.sceneManager.camera,
+                canvasContainer,
+                this.sceneManager.dimension
+            );
+            console.log('CameraController created');
+
+            console.log('Creating RenderEngine...');
+            this.renderEngine = new RenderEngine(this.sceneManager);
+            console.log('RenderEngine created');
+
+            // Initialize default vector field (vortex)
+            console.log('Creating FunctionParser...');
+            const parser = new FunctionParser();
+            console.log('Parsing vector field function...');
+            const result = parser.parse('[-y, x]', 2);
+            if (result.error) {
+                console.error('Parse error:', result.error);
+                return;
+            }
+            console.log('Creating VectorField...');
+            this.vectorField = new VectorField(2, result.func);
+            console.log('VectorField created');
+
+            // Initialize UI controller
+            console.log('Creating UIController...');
+            this.uiController = new UIController(this);
+            console.log('UIController created');
+
+            // Start render loop
+            console.log('Starting render loop...');
+            this.renderEngine.start();
+            console.log('Render loop started');
+
+            // Initial visualization
+            console.log('Updating visualization...');
+            this.uiController.updateVisualization();
+            console.log('Visualization updated');
+
+            // Update stats display
+            this.statsInterval = setInterval(() => {
+                const stats = this.renderEngine.getStats();
+                this.uiController.updateStats(stats);
+            }, 100);
+
+            console.log('Vector Field Visualization initialized successfully');
+        } catch (error) {
+            console.error('Initialization error:', error);
+            console.error('Stack:', error.stack);
         }
-
-        // Initialize core components
-        this.sceneManager = new SceneManager(canvasContainer);
-        this.cameraController = new CameraController(
-            this.sceneManager.camera,
-            canvasContainer,
-            this.sceneManager.dimension
-        );
-        this.renderEngine = new RenderEngine(this.sceneManager);
-
-        // Initialize default vector field (vortex)
-        const parser = new FunctionParser();
-        const result = parser.parse('[-y, x]', 2);
-        this.vectorField = new VectorField(2, result.func);
-
-        // Initialize UI controller
-        this.uiController = new UIController(this);
-
-        // Start render loop
-        this.renderEngine.start();
-
-        // Initial visualization
-        this.uiController.updateVisualization();
-
-        // Update stats display
-        this.statsInterval = setInterval(() => {
-            const stats = this.renderEngine.getStats();
-            this.uiController.updateStats(stats);
-        }, 100);
-
-        console.log('Vector Field Visualization initialized');
     }
 
     /**

@@ -257,29 +257,41 @@ class UIController {
      */
     updateVisualization() {
         try {
+            console.log('updateVisualization() called, mode:', this.state.mode);
+
             // Clear previous visualization
             this.app.sceneManager.clearMeshes();
+            console.log('Cleared meshes');
 
             // Create new visualization mode
             let ModeClass;
+            console.log('Available classes - ArrowMode:', typeof window.ArrowMode, 'StreamlineMode:', typeof window.StreamlineMode);
+
             switch (this.state.mode) {
                 case 'arrows':
-                    ModeClass = ArrowMode;
+                    ModeClass = window.ArrowMode;
                     break;
                 case 'streamlines':
-                    ModeClass = StreamlineMode;
+                    ModeClass = window.StreamlineMode;
                     break;
                 case 'particles':
-                    ModeClass = ParticleMode;
+                    ModeClass = window.ParticleMode;
                     break;
                 case 'heatmap':
-                    ModeClass = HeatmapMode;
+                    ModeClass = window.HeatmapMode;
                     break;
                 default:
-                    ModeClass = ArrowMode;
+                    ModeClass = window.ArrowMode;
             }
 
+            if (!ModeClass) {
+                throw new Error('ModeClass is null - visualization mode not found');
+            }
+
+            console.log('ModeClass selected:', ModeClass.name);
+
             const mode = new ModeClass(this.app.vectorField, this.app.sceneManager);
+            console.log('Visualization mode instantiated');
 
             // Apply style config
             try {
@@ -289,7 +301,9 @@ class UIController {
                     density: this.state.density,
                     opacity: this.state.opacity
                 });
+                console.log('Style updated');
             } catch (e) {
+                console.error('Style update error:', e);
                 // Invalid color, use default
                 mode.updateStyle({
                     color: 0x0066ff,
@@ -302,19 +316,26 @@ class UIController {
             // Set parameters if any
             if (Object.keys(this.state.parameters).length > 0) {
                 this.app.vectorField.setParameters(this.state.parameters);
+                console.log('Parameters set');
             }
 
             // Render
+            console.log('Calling mode.render()...');
             mode.render();
+            console.log('mode.render() completed');
 
             // Update stats
             const stats = this.app.sceneManager.getStats();
             document.getElementById('vector-count').textContent = stats.meshes;
+            console.log('Visualization complete. Mesh count:', stats.meshes);
         } catch (error) {
             console.error('Visualization error:', error);
+            console.error('Error stack:', error.stack);
             const errorEl = document.getElementById('function-error');
-            errorEl.textContent = 'Rendering error: ' + error.message;
-            errorEl.className = 'error';
+            if (errorEl) {
+                errorEl.textContent = 'Rendering error: ' + error.message;
+                errorEl.className = 'error';
+            }
         }
     }
 
