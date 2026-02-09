@@ -3,270 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vector Field Visualization</title>
-    <link rel="stylesheet" href="src/ui/styles/main.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #1a1a1a;
-            color: #fff;
-            overflow: hidden;
-        }
-        #container {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-        }
-        #canvas-container {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(circle at center, #2a2a2a 0%, #1a1a1a 100%);
-        }
-        canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        #ui-panel {
-            width: 350px;
-            background: #252525;
-            border-left: 1px solid #3a3a3a;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-        .panel-section {
-            padding: 20px;
-            border-bottom: 1px solid #3a3a3a;
-        }
-        .panel-title {
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: #888;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-        }
-        .control-group {
-            margin-bottom: 15px;
-        }
-        .label {
-            display: block;
-            font-size: 13px;
-            margin-bottom: 8px;
-            color: #bbb;
-        }
-        .label input[type="checkbox"] {
-            vertical-align: middle;
-        }
-        label input[type="checkbox"] {
-            display: inline;
-            margin-bottom: 0;
-        }
-        input[type="text"],
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 8px 12px;
-            background: #1a1a1a;
-            border: 1px solid #3a3a3a;
-            color: #fff;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 13px;
-        }
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        select:focus {
-            outline: none;
-            border-color: #0066ff;
-            box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.1);
-        }
-        input[type="range"] {
-            width: 100%;
-            height: 5px;
-            border-radius: 3px;
-            background: #3a3a3a;
-            outline: none;
-            -webkit-appearance: none;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #0066ff;
-            cursor: pointer;
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #0066ff;
-            cursor: pointer;
-            border: none;
-        }
-        button {
-            padding: 8px 12px;
-            background: #0066ff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        button:hover {
-            background: #0052cc;
-        }
-        button:active {
-            background: #003d99;
-        }
-        button:disabled {
-            background: #003366;
-            cursor: not-allowed;
-        }
-        input[type="checkbox"] {
-            accent-color: #0066ff;
-            cursor: pointer;
-        }
-        .error {
-            color: #ff6b6b;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-        .success {
-            color: #51cf66;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-        #stats {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 15px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-family: monospace;
-            color: #0f0;
-        }
-    </style>
+    <title>2D Vector Field Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="container">
-        <div id="canvas-container">
-            <div id="stats">
-                <div>FPS: <span id="fps">0</span></div>
-                <div>Vectors: <span id="vector-count">0</span></div>
+    <div class="container">
+        <h1>2D Vector Field Visualizer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="field-select">Vector Field:</label>
+                <select id="field-select">
+                    <option value="gradient">Gradient (∇f)</option>
+                    <option value="radial">Radial</option>
+                    <option value="circular">Circular (Curl)</option>
+                    <option value="sine">Sine Wave</option>
+                    <option value="saddle">Saddle Point</option>
+                    <option value="spiral">Spiral</option>
+                    <option value="custom">Custom Formula</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="scale-slider">Vector Scale:</label>
+                <input type="range" id="scale-slider" min="0.1" max="3" step="0.1" value="1">
+                <span id="scale-value">1.0</span>
+            </div>
+
+            <div class="control-group">
+                <label for="density-slider">Density:</label>
+                <input type="range" id="density-slider" min="5" max="50" step="5" value="20">
+                <span id="density-value">20</span>
+            </div>
+
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="show-grid" checked>
+                    Show Grid
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="show-magnitude" checked>
+                    Color by Magnitude
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="animate" checked>
+                    Animate
+                </label>
+            </div>
+
+            <div class="control-group">
+                <button id="reset-btn">Reset View</button>
+                <button id="clear-btn">Clear Trail</button>
             </div>
         </div>
-        <div id="ui-panel">
-            <div class="panel-section">
-                <div class="panel-title">Scene</div>
-                <div class="control-group">
-                    <button id="reset-view" style="width: 100%;">Reset View</button>
-                </div>
-            </div>
 
-            <div class="panel-section">
-                <div class="panel-title">Vector Field</div>
-                <div class="control-group">
-                    <label class="label">Preset</label>
-                    <select id="function-preset">
-                        <option value="">Custom</option>
-                        <option value="vortex-2d">[[-y, x]]</option>
-                        <option value="saddle-2d">[[x, -y]]</option>
-                        <option value="spiral-2d">[[-y + 0.1*x, x + 0.1*y]]</option>
-                        <option value="wave-2d">[[sin(y), cos(x)]]</option>
-                        <option value="gradient-2d">[[x, y]]</option>
-                        <option value="curl-2d">[[cos(x)*sin(y), sin(x)*cos(y)]]</option>
-                    </select>
-                </div>
-                <div class="control-group">
-                    <label class="label">Custom Function</label>
-                    <input type="text" id="function-input" placeholder="Example: [-y, x]" value="[-y, x]">
-                    <div id="function-error"></div>
-                </div>
+        <div class="canvas-container">
+            <canvas id="viewport"></canvas>
+            <div class="info-panel">
+                <p id="info-text">Hover over the canvas for coordinates</p>
             </div>
+        </div>
 
-            <div class="panel-section">
-                <div class="panel-title">Rendering</div>
-                <div class="control-group">
-                    <label class="label">Density</label>
-                    <input type="range" id="density-slider" min="0.3" max="2" step="0.1" value="1.5">
-                    <small style="color: #666; display: block; margin-top: 5px;">
-                        <span id="density-value">1.5</span>x
-                    </small>
+        <div class="formula-panel" id="formula-panel" style="display: none;">
+            <label>Custom Vector Field Formula:</label>
+            <div class="formula-input-group">
+                <div>
+                    <label>Vx (X-component):</label>
+                    <input type="text" id="vx-formula" placeholder="e.g., x * 0.01 + y * 0.005" value="x * 0.01 + y * 0.005">
                 </div>
-            </div>
-
-            <div class="panel-section">
-                <div class="panel-title">Style</div>
-                <div class="control-group">
-                    <label class="label">Vector Color</label>
-                    <input type="text" id="vector-color" value="#ffffff" placeholder="#ffffff" style="font-family: monospace;">
+                <div>
+                    <label>Vy (Y-component):</label>
+                    <input type="text" id="vy-formula" placeholder="e.g., -y * 0.01 + x * 0.005" value="-y * 0.01 + x * 0.005">
                 </div>
-                <div class="control-group">
-                    <label style="display: inline; font-size: 13px; color: #bbb;">
-                        <input type="checkbox" id="show-arrowheads" checked style="margin-right: 8px; cursor: pointer; vertical-align: middle;">
-                        Show Arrowheads
-                    </label>
-                </div>
-                <div class="control-group">
-                    <label class="label">Vector Scale</label>
-                    <input type="range" id="vector-scale" min="0.5" max="3" step="0.1" value="1">
-                    <small style="color: #666; display: block; margin-top: 5px;">
-                        <span id="scale-value">1.0</span>x
-                    </small>
-                </div>
-                <div class="control-group">
-                    <label class="label">Opacity</label>
-                    <input type="range" id="opacity-slider" min="0" max="1" step="0.1" value="1">
-                    <small style="color: #666; display: block; margin-top: 5px;">
-                        <span id="opacity-value">100</span>%
-                    </small>
-                </div>
-            </div>
-
-            <div id="parameters-section" class="panel-section" style="display: none;">
-                <div class="panel-title">Parameters</div>
-                <div id="parameters-container"></div>
+                <button id="apply-formula-btn">Apply Formula</button>
+                <small>Available variables: x, y. Use Math functions: sin, cos, sqrt, abs, pow, exp, log, PI, E</small>
             </div>
         </div>
     </div>
 
-    <!-- Load libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
-
-    <!-- Load core modules -->
-    <script src="src/core/VectorField.js"></script>
-    <script src="src/core/FunctionParser.js"></script>
-
-    <!-- Load rendering modules -->
-    <script src="src/rendering/SceneManager.js"></script>
-    <script src="src/rendering/CameraController.js"></script>
-    <script src="src/rendering/RenderEngine.js"></script>
-
-    <!-- Load visualization modules -->
-    <script src="src/visualization/VisualizationMode.js"></script>
-    <script src="src/visualization/ArrowMode.js"></script>
-    <script src="src/visualization/StreamlineMode.js"></script>
-    <script src="src/visualization/ParticleMode.js"></script>
-    <script src="src/visualization/HeatmapMode.js"></script>
-
-    <!-- Load UI controller -->
-    <script src="src/ui/UIController.js"></script>
-
-    <!-- Load main app -->
-    <script src="src/index.js"></script>
+    <script src="vector-field.js"></script>
 </body>
 </html>
