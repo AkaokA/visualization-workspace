@@ -43,12 +43,6 @@ class UIController {
             functionInput.addEventListener('input', (e) => this.setCustomFunction(e.target.value));
         }
 
-        // Visualization mode
-        const modeSelect = document.getElementById('visualization-mode');
-        if (modeSelect) {
-            modeSelect.addEventListener('change', (e) => this.setVisualizationMode(e.target.value));
-        }
-
         // Density slider
         const densitySlider = document.getElementById('density-slider');
         if (densitySlider) {

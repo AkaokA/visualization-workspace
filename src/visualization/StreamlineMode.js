@@ -15,30 +15,41 @@ class StreamlineMode extends VisualizationMode {
         const bounds = this.vectorField.getBounds();
         const dimension = this.vectorField.dimension;
 
-        // Generate seed points for streamlines
-        const seedPoints = this.generateSeedPoints(bounds, Math.ceil(this.numStreamlines * this.config.density));
+        // Generate fewer, better spaced seed points for streamlines
+        const seedCount = Math.ceil(this.numStreamlines * this.config.density * 0.4); // Reduce density significantly
+        const seedPoints = this.generateSeedPoints(bounds, seedCount);
+        console.log('StreamlineMode: Generated', seedPoints.length, 'seed points');
 
         const color = new THREE.Color(this.config.color);
+        let totalPoints = 0;
 
         // Trace streamlines
-        for (const seed of seedPoints) {
+        for (let s = 0; s < seedPoints.length; s++) {
+            const seed = seedPoints[s];
             const path = this.vectorField.integrateRK4(seed, 50, 0.2);
 
-            if (path.length < 2) continue;
+            if (path.length < 2) {
+                continue;
+            }
 
-            // Draw line along path using createLine helper
-            for (let i = 0; i < path.length - 1; i++) {
-                const start = path[i];
-                const end = path[i + 1];
+            // Show every 2-3 points to reduce overlapping geometry
+            const stepSize = Math.max(2, Math.floor(path.length / 20)); // Show ~20 points per streamline
 
-                this.createLine(
-                    { x: start.x, y: start.y, z: start.z || 0 },
-                    { x: end.x, y: end.y, z: end.z || 0 },
+            for (let i = 0; i < path.length; i += stepSize) {
+                const p = path[i];
+
+                // Create small sphere to mark streamline path
+                this.createPoint(
+                    { x: p.x, y: p.y, z: p.z || 0 },
+                    0.15 * this.config.scale,  // larger radius so points are more visible
                     color,
                     this.config.opacity
                 );
+                totalPoints++;
             }
         }
+
+        console.log('StreamlineMode: Created', totalPoints, 'point spheres along', seedPoints.length, 'streamlines');
     }
 
     generateSeedPoints(bounds, count) {
