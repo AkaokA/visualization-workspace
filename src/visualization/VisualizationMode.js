@@ -22,11 +22,12 @@ class VisualizationMode {
      */
     getDefaultConfig() {
         return {
-            color: 0x0066ff,
+            color: 0xffffff,
             opacity: 1.0,
             scale: 1.0,
-            density: 1.0,
-            animated: false
+            density: 1.5,
+            animated: false,
+            showArrowheads: true
         };
     }
 
@@ -118,7 +119,7 @@ class VisualizationMode {
      * Helper: Create arrow mesh (cone + cylinder)
      * @protected
      */
-    createArrow(start, direction, length, color = this.config.color, opacity = this.config.opacity) {
+    createArrow(start, direction, length, color = this.config.color, opacity = this.config.opacity, showHead = true) {
         const group = new THREE.Group();
 
         // Normalize direction
@@ -130,7 +131,7 @@ class VisualizationMode {
 
         // Cylinder for shaft
         const cylinderGeometry = new THREE.CylinderGeometry(length * 0.05, length * 0.05, length * 0.7, 8);
-        const material = new THREE.MeshPhongMaterial({ color, opacity, transparent: opacity < 1 });
+        const material = new THREE.MeshBasicMaterial({ color, opacity, transparent: opacity < 1 });
 
         const cylinder = new THREE.Mesh(cylinderGeometry, material);
         cylinder.position.copy(start);
@@ -146,20 +147,22 @@ class VisualizationMode {
 
         group.add(cylinder);
 
-        // Cone for arrowhead
-        const coneGeometry = new THREE.ConeGeometry(length * 0.15, length * 0.3, 8);
-        const cone = new THREE.Mesh(coneGeometry, material);
+        // Cone for arrowhead (only if showHead is true)
+        if (showHead) {
+            const coneGeometry = new THREE.ConeGeometry(length * 0.15, length * 0.3, 8);
+            const cone = new THREE.Mesh(coneGeometry, material);
 
-        cone.position.copy(start);
-        cone.position.addScaledVector(dir, length * 0.85);
+            cone.position.copy(start);
+            cone.position.addScaledVector(dir, length * 0.85);
 
-        if (axis.length() > 0.001) {
-            const quaternion = new THREE.Quaternion();
-            quaternion.setFromAxisAngle(axis.normalize(), Math.acos(dir.y));
-            cone.quaternion.copy(quaternion);
+            if (axis.length() > 0.001) {
+                const quaternion = new THREE.Quaternion();
+                quaternion.setFromAxisAngle(axis.normalize(), Math.acos(dir.y));
+                cone.quaternion.copy(quaternion);
+            }
+
+            group.add(cone);
         }
-
-        group.add(cone);
 
         this.meshes.push(group);
         return this.sceneManager.addMesh(group);
@@ -171,7 +174,7 @@ class VisualizationMode {
      */
     createPoint(position, size = 0.1, color = this.config.color, opacity = this.config.opacity) {
         const geometry = new THREE.SphereGeometry(size, 8, 8);
-        const material = new THREE.MeshPhongMaterial({ color, opacity, transparent: opacity < 1 });
+        const material = new THREE.MeshBasicMaterial({ color, opacity, transparent: opacity < 1 });
         const sphere = new THREE.Mesh(geometry, material);
 
         sphere.position.set(position.x, position.y, position.z || 0);

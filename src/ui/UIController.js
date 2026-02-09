@@ -10,10 +10,11 @@ class UIController {
             mode: 'arrows',
             function: '[-y, x]',
             functionVariables: ['x', 'y'],
-            color: '#0066ff',
+            color: '#ffffff',
             scale: 1.0,
-            density: 1.0,
+            density: 1.5,
             opacity: 1.0,
+            showArrowheads: true,
             parameters: {}
         };
 
@@ -24,12 +25,6 @@ class UIController {
      * Initialize all UI event listeners
      */
     initEventListeners() {
-        // Dimension toggle
-        const dimensionBtn = document.getElementById('dimension-toggle');
-        if (dimensionBtn) {
-            dimensionBtn.addEventListener('click', () => this.toggleDimension());
-        }
-
         // Reset view
         const resetBtn = document.getElementById('reset-view');
         if (resetBtn) {
@@ -73,6 +68,15 @@ class UIController {
             });
         }
 
+        // Arrowheads toggle
+        const arrowheadsCheckbox = document.getElementById('show-arrowheads');
+        if (arrowheadsCheckbox) {
+            arrowheadsCheckbox.addEventListener('change', (e) => {
+                this.state.showArrowheads = e.target.checked;
+                this.updateVisualization();
+            });
+        }
+
         // Scale slider
         const scaleSlider = document.getElementById('vector-scale');
         if (scaleSlider) {
@@ -91,30 +95,6 @@ class UIController {
                 document.getElementById('opacity-value').textContent = Math.round(parseFloat(e.target.value) * 100);
                 this.updateVisualization();
             });
-        }
-    }
-
-    /**
-     * Toggle between 2D and 3D
-     */
-    async toggleDimension() {
-        const newDimension = this.state.dimension === 2 ? 3 : 2;
-
-        // Disable button during transition
-        const btn = document.getElementById('dimension-toggle');
-        btn.disabled = true;
-
-        try {
-            await this.app.sceneManager.switchDimension();
-            this.state.dimension = newDimension;
-            this.app.cameraController.setDimension(newDimension);
-
-            btn.textContent = newDimension === 2 ? 'Switch to 3D' : 'Switch to 2D';
-
-            // Re-render with new dimension
-            this.updateVisualization();
-        } finally {
-            btn.disabled = false;
         }
     }
 
@@ -299,7 +279,8 @@ class UIController {
                     color: this.hexToInt(this.state.color),
                     scale: this.state.scale,
                     density: this.state.density,
-                    opacity: this.state.opacity
+                    opacity: this.state.opacity,
+                    showArrowheads: this.state.showArrowheads
                 });
                 console.log('Style updated');
             } catch (e) {
@@ -309,7 +290,8 @@ class UIController {
                     color: 0x0066ff,
                     scale: this.state.scale,
                     density: this.state.density,
-                    opacity: this.state.opacity
+                    opacity: this.state.opacity,
+                    showArrowheads: this.state.showArrowheads
                 });
             }
 

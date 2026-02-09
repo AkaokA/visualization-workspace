@@ -61,6 +61,13 @@
             margin-bottom: 8px;
             color: #bbb;
         }
+        .label input[type="checkbox"] {
+            vertical-align: middle;
+        }
+        label input[type="checkbox"] {
+            display: inline;
+            margin-bottom: 0;
+        }
         input[type="text"],
         input[type="number"],
         select {
@@ -126,6 +133,10 @@
             background: #003366;
             cursor: not-allowed;
         }
+        input[type="checkbox"] {
+            accent-color: #0066ff;
+            cursor: pointer;
+        }
         .error {
             color: #ff6b6b;
             font-size: 12px;
@@ -161,10 +172,6 @@
             <div class="panel-section">
                 <div class="panel-title">Scene</div>
                 <div class="control-group">
-                    <label class="label">Dimension</label>
-                    <button id="dimension-toggle" style="width: 100%;">Switch to 3D</button>
-                </div>
-                <div class="control-group">
                     <button id="reset-view" style="width: 100%;">Reset View</button>
                 </div>
             </div>
@@ -184,7 +191,7 @@
                     </select>
                 </div>
                 <div class="control-group">
-                    <label class="label">Custom Function (2D: "x, y" or 3D: "x, y, z")</label>
+                    <label class="label">Custom Function</label>
                     <input type="text" id="function-input" placeholder="Example: [-y, x]" value="[-y, x]">
                     <div id="function-error"></div>
                 </div>
@@ -203,9 +210,9 @@
                 </div>
                 <div class="control-group">
                     <label class="label">Density</label>
-                    <input type="range" id="density-slider" min="0.3" max="2" step="0.1" value="1">
+                    <input type="range" id="density-slider" min="0.3" max="2" step="0.1" value="1.5">
                     <small style="color: #666; display: block; margin-top: 5px;">
-                        <span id="density-value">1.0</span>x
+                        <span id="density-value">1.5</span>x
                     </small>
                 </div>
             </div>
@@ -214,7 +221,13 @@
                 <div class="panel-title">Style</div>
                 <div class="control-group">
                     <label class="label">Vector Color</label>
-                    <input type="text" id="vector-color" value="#0066ff" placeholder="#0066ff" style="font-family: monospace;">
+                    <input type="text" id="vector-color" value="#ffffff" placeholder="#ffffff" style="font-family: monospace;">
+                </div>
+                <div class="control-group">
+                    <label style="display: inline; font-size: 13px; color: #bbb;">
+                        <input type="checkbox" id="show-arrowheads" checked style="margin-right: 8px; cursor: pointer; vertical-align: middle;">
+                        Show Arrowheads
+                    </label>
                 </div>
                 <div class="control-group">
                     <label class="label">Vector Scale</label>

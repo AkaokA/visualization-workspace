@@ -81,10 +81,10 @@ class ParticleMode extends VisualizationMode {
 
     getDefaultConfig() {
         return {
-            color: 0x0066ff,
+            color: 0xffffff,
             opacity: 0.8,
             scale: 1.0,
-            density: 1.0,
+            density: 1.5,
             animated: true
         };
     }

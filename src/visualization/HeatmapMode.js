@@ -74,10 +74,10 @@ class HeatmapMode extends VisualizationMode {
 
     getDefaultConfig() {
         return {
-            color: 0x0066ff,
+            color: 0xffffff,
             opacity: 1.0,
             scale: 1.0,
-            density: 1.0,
+            density: 1.5,
             animated: false
         };
     }

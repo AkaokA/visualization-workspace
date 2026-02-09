@@ -7,7 +7,7 @@ class ArrowMode extends VisualizationMode {
     constructor(vectorField, sceneManager) {
         super(vectorField, sceneManager);
         this.grid = null;
-        this.resolution = 15;
+        this.resolution = 25; // Increased from 15 for better density at default 1.5x
     }
 
     /**
@@ -67,20 +67,14 @@ class ArrowMode extends VisualizationMode {
                 z: vector[2] || 0
             };
 
-            // Scale direction by arrowLength
-            const displayDir = {
-                x: direction.x * (arrowLength / magnitude || 0),
-                y: direction.y * (arrowLength / magnitude || 0),
-                z: direction.z * (arrowLength / magnitude || 0)
-            };
-
-            // Create arrow
+            // Create arrow (arrowLength controls the size)
             this.createArrow(
                 { x: pos.x, y: pos.y, z: pos.z || 0 },
-                displayDir,
-                1,
+                direction,
+                arrowLength,
                 new THREE.Color(this.config.color),
-                this.config.opacity
+                this.config.opacity,
+                this.config.showArrowheads
             );
         }
     }
@@ -115,12 +109,13 @@ class ArrowMode extends VisualizationMode {
      */
     getDefaultConfig() {
         return {
-            color: 0x0066ff,
+            color: 0xffffff,
             opacity: 1.0,
             scale: 1.0,
-            density: 1.0,
+            density: 1.5,
             animated: false,
-            arrowSize: 0.1
+            arrowSize: 0.1,
+            showArrowheads: true
         };
     }
 }
